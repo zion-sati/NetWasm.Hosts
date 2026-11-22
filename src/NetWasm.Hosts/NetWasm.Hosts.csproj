@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>NetWasm.Hosts.Tasks</AssemblyName>
+    <RootNamespace>NetWasm.Hosts</RootNamespace>
+    <PackageId>NetWasm.Hosts</PackageId>
+    <Description>Publishes a NetWasm wasi:http service component for hosts that run JavaScript: dotnet publish also writes a Cloudflare Worker that wrangler runs and deploys.</Description>
+    <PackageTags>netwasm;wasm;wasi;cloudflare;workers;serverless</PackageTags>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
+    <DebugType Condition="'$(_IsPacking)' == 'true'">none</DebugType>
+    <DebugSymbols Condition="'$(_IsPacking)' == 'true'">false</DebugSymbols>
+    <NoWarn>$(NoWarn);NU5100;NU5128</NoWarn>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);NetWasmHostsWriteVersionProps</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Utilities.Core" PrivateAssets="all" ExcludeAssets="runtime" />
+    <InternalsVisibleTo Include="NetWasm.Hosts.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="build/NetWasm.Hosts.targets" Pack="true" PackagePath="build/" />
+    <None Include="hosting/*.mjs" Pack="true" PackagePath="hosting/" />
+    <None Include="README.md" Pack="true" PackagePath="/" />
+    <None Include="../../LICENSES/LicenseRef-NetWasm-Community-1.0.txt" Pack="true" PackagePath="LICENSE.txt" />
+  </ItemGroup>
+
+  <!-- build/NetWasm.Hosts.props names the package's version and the NetWasm version it works with. -->
+  <Target Name="NetWasmHostsWriteVersionProps">
+    <PropertyGroup>
+      <_NetWasmHostsVersionProps>$(IntermediateOutputPath)NetWasm.Hosts.props</_NetWasmHostsVersionProps>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(_NetWasmHostsVersionProps)"
+                      Lines="&lt;Project&gt;;  &lt;PropertyGroup&gt;;    &lt;NetWasmHostsVersion&gt;$(PackageVersion)&lt;/NetWasmHostsVersion&gt;;    &lt;NetWasmHostsNetWasmVersion&gt;$(NetWasmVersion)&lt;/NetWasmHostsNetWasmVersion&gt;;  &lt;/PropertyGroup&gt;;&lt;/Project&gt;"
+                      Overwrite="true" WriteOnlyWhenDifferent="true" />
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(_NetWasmHostsVersionProps)" PackagePath="build/" />
+    </ItemGroup>
+  </Target>
+</Project>

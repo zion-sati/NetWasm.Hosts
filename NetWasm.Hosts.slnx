@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/NetWasm.Hosts/NetWasm.Hosts.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/NetWasm.Hosts.Tests/NetWasm.Hosts.Tests.csproj" />
+  </Folder>
+</Solution>

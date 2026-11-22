@@ -1,0 +1,68 @@
+<!--
+  Copyright (c) 2026 Zion Sati and NetWasm contributors (https://github.com/zion-sati/NetWasm.Hosts).
+  SPDX-License-Identifier: LicenseRef-NetWasm-Community-1.0
+-->
+<Project>
+  <!-- After dotnet publish, a NetWasm wasi:http service component is also published for each host NetWasmServiceHosts
+       lists, in $(PublishDir)<host>: the host's entry and configuration, the component transpiled by NetWasm's jco
+       (gen/) and the host modules the entry imports (host/).
+
+       NetWasmServiceHosts                  the hosts, separated by semicolons: cloudflare.
+       NetWasmCloudflareWorkerName          the Worker's name; the assembly name in lower case by default.
+       NetWasmCloudflareCompatibilityDate   the Workers runtime date the Worker asks for; the date this release was
+                                            verified with by default.
+       NetWasmEnvironmentVariable items reach the component's environment; a host's own variables of the same name
+       replace them. -->
+  <PropertyGroup>
+    <NetWasmCloudflareCompatibilityDate Condition="'$(NetWasmCloudflareCompatibilityDate)' == ''">2026-11-01</NetWasmCloudflareCompatibilityDate>
+  </PropertyGroup>
+
+  <UsingTask TaskName="NetWasm.Hosts.PublishServiceHostsTask"
+             AssemblyFile="$(MSBuildThisFileDirectory)../tasks/net10.0/NetWasm.Hosts.Tasks.dll" />
+
+  <Target Name="NetWasmPublishServiceHosts"
+          AfterTargets="Publish"
+          DependsOnTargets="NetWasmSdkResolveBuildEnvironment"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <Error Code="NWHOSTS001"
+           Condition="'$(_NetWasmHttpService)' != 'true'"
+           Text="NetWasm.Hosts publishes a wasi:http service component (a net10.0-netwasm project whose NetWasmWorld is service, as the netwasm-serverless template makes); $(MSBuildProjectName) is not one." />
+    <Error Code="NWHOSTS002"
+           Condition="'$(NetWasmHostingBuildPackageVersion)' != '$(NetWasmHostsNetWasmVersion)'"
+           Text="NetWasm.Hosts $(NetWasmHostsVersion) works with NetWasm.Sdk $(NetWasmHostsNetWasmVersion), and $(MSBuildProjectName) builds with NetWasm.Sdk $(NetWasmHostingBuildPackageVersion). Use the NetWasm.Hosts version that matches NetWasm.Sdk." />
+    <PropertyGroup>
+      <_NetWasmHostsTranspiler>$([System.IO.Path]::Combine('$(PkgNetWasm_Hosting_Build)', 'tasks', 'net10.0', 'run-jco-transpile.mjs'))</_NetWasmHostsTranspiler>
+      <_NetWasmHostsWork>$([System.IO.Path]::GetFullPath($([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'netwasm', 'hosts'))))</_NetWasmHostsWork>
+      <_NetWasmHostsComponent>$([System.IO.Path]::Combine('$(_NetWasmHostsWork)', 'component'))</_NetWasmHostsComponent>
+      <_NetWasmHostsOutputRoot>$([System.IO.Path]::GetFullPath($([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', '$(PublishDir)'))))</_NetWasmHostsOutputRoot>
+      <_NetWasmHostsServiceComponent>$([System.IO.Path]::GetFullPath($([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', '$(NetWasmOutputPath)'))))</_NetWasmHostsServiceComponent>
+    </PropertyGroup>
+    <Error Code="NWHOSTS003"
+           Condition="'$(NetWasmNodePath)' == '' OR !Exists('$(NetWasmNodePath)') OR '$(NetWasmJcoPath)' == '' OR !Exists('$(NetWasmJcoPath)') OR '$(PkgNetWasm_Hosting_Build)' == '' OR !Exists('$(_NetWasmHostsTranspiler)') OR '$(NetWasmHostingJavaScriptRoot)' == '' OR !Exists('$(NetWasmHostingJavaScriptRoot)')"
+           Text="NetWasm.Hosts needs the Node.js, jco, component transpiler and host modules NetWasm.Sdk resolves for a service project, and some were not found. Run dotnet restore." />
+    <Error Code="NWHOSTS004"
+           Condition="!Exists('$(_NetWasmHostsServiceComponent)')"
+           Text="The service component $(_NetWasmHostsServiceComponent) was not built." />
+
+    <RemoveDir Directories="$(_NetWasmHostsWork)" />
+    <MakeDir Directories="$(_NetWasmHostsWork)" />
+    <Exec Command="&quot;$(NetWasmNodePath)&quot; &quot;$(_NetWasmHostsTranspiler)&quot; &quot;$(NetWasmJcoPath)&quot; &quot;$(_NetWasmHostsServiceComponent)&quot; &quot;$(_NetWasmHostsComponent)&quot; &quot;$(AssemblyName)&quot; &quot;$(_NetWasmHostsWork)/transpile.json&quot;" />
+    <ItemGroup>
+      <_NetWasmServiceHostSetting Include="NetWasmCloudflareWorkerName" Value="$(NetWasmCloudflareWorkerName)" />
+      <_NetWasmServiceHostSetting Include="NetWasmCloudflareCompatibilityDate" Value="$(NetWasmCloudflareCompatibilityDate)" />
+      <_NetWasmServiceHostName Include="$(NetWasmServiceHosts)" />
+    </ItemGroup>
+    <PublishServiceHostsTask ComponentDirectory="$(_NetWasmHostsComponent)"
+                             ComponentName="$(AssemblyName)"
+                             HostingDirectories="$(NetWasmHostingJavaScriptRoot);$(MSBuildThisFileDirectory)../hosting"
+                             Hosts="$(NetWasmServiceHosts)"
+                             OutputRoot="$(_NetWasmHostsOutputRoot)"
+                             AssemblyName="$(AssemblyName)"
+                             EnvironmentVariables="@(NetWasmEnvironmentVariable)"
+                             Settings="@(_NetWasmServiceHostSetting)">
+      <Output TaskParameter="WrittenFiles" ItemName="FileWrites" />
+    </PublishServiceHostsTask>
+    <Message Importance="high"
+             Text="$(MSBuildProjectName) -&gt; $([System.IO.Path]::Combine('$(_NetWasmHostsOutputRoot)', '%(_NetWasmServiceHostName.Identity)')) (%(_NetWasmServiceHostName.Identity))" />
+  </Target>
+</Project>

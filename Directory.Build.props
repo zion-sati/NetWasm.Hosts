@@ -1,0 +1,20 @@
+<Project>
+  <PropertyGroup>
+    <Deterministic>true</Deterministic>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <!-- Packages carry no local paths; tests keep them, as coverage reads the sources from them. -->
+    <PathMap Condition="'$(_IsPacking)' == 'true'">$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)'))=/_/</PathMap>
+    <Authors>Zion Sati</Authors>
+    <Copyright>Copyright © 2026 Zion Sati</Copyright>
+    <PackageProjectUrl>https://github.com/zion-sati/NetWasm.Hosts</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/zion-sati/NetWasm.Hosts</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <!-- A release takes the NetWasm version it is built for: NetWasm.Hosts X.Y.Z works with NetWasm.Sdk X.Y.Z only. -->
+    <NetWasmVersion>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)global.json')), '"NetWasm\.Sdk"\s*:\s*"([^"]+)"').Groups[1].Value)</NetWasmVersion>
+    <Version Condition="'$(Version)' == ''">$(NetWasmVersion)</Version>
+  </PropertyGroup>
+</Project>

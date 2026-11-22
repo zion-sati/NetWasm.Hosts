@@ -9,7 +9,7 @@ around it, so `dotnet publish` also writes a directory that host runs as it is.
 dotnet new install NetWasm.Templates
 dotnet new netwasm-serverless -n Hello
 cd Hello
-dotnet add package NetWasm.Hosts --version 0.15.2
+dotnet add package NetWasm.Hosts --version 0.15.2.1
 ```
 
 Name the hosts in the project file:
@@ -112,9 +112,10 @@ runtime, so the function runs on Node.js. `vercel dev` needs a Vercel account, s
 
 ## Versions
 
-NetWasm.Hosts uses NetWasm's build tools and host modules as they are in one NetWasm release, so its version is the
-NetWasm version it works with: NetWasm.Hosts 0.15.2 needs NetWasm.Sdk 0.15.2, and the build stops with NWHOSTS002
-when the two differ. It is verified with wrangler 4.158.0 (workerd 1.20261104.1), Deno 2.9.8, netlify-cli 27.16.2
+NetWasm.Hosts uses NetWasm's build tools and host modules as they are in one NetWasm release, so its version starts
+with the NetWasm version it works with, and a fourth part counts the later releases for that NetWasm version:
+NetWasm.Hosts 0.15.2 and 0.15.2.1 both need NetWasm.Sdk 0.15.2, and the build stops with NWHOSTS002 when the
+project's NetWasm.Sdk is another version. It is verified with wrangler 4.158.0 (workerd 1.20261104.1), Deno 2.9.8, netlify-cli 27.16.2
 and Node.js 24.
 
 ## Diagnostics
@@ -122,7 +123,7 @@ and Node.js 24.
 | Code | Meaning |
 | --- | --- |
 | NWHOSTS001 | The project is not a `wasi:http` service component (`NetWasmWorld` `service`, as the `netwasm-serverless` template makes) |
-| NWHOSTS002 | The package's version and the project's NetWasm.Sdk version differ |
+| NWHOSTS002 | The project's NetWasm.Sdk is not the NetWasm version the package works with |
 | NWHOSTS003 | NetWasm's Node.js, jco, component transpiler or host modules were not restored |
 | NWHOSTS004 | The service component was not built |
 | NWHOSTS010 | A setting or the transpiled component cannot be published for a host; the message says which (`NetWasmServiceHosts` missing or naming an unknown host, a Worker name or date that is not one, a variable declared twice) |

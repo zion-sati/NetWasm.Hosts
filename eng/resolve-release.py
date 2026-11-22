@@ -10,10 +10,13 @@ import re
 from pathlib import Path
 
 
+# The NetWasm version a release works with (major.minor.patch), then a revision for each later release for the same
+# NetWasm version (0.15.2.1). A revision starts at 1: NuGet drops a .0 revision from the version.
 SEMVER = re.compile(
     r"(?:0|[1-9][0-9]*)\."
     r"(?:0|[1-9][0-9]*)\."
     r"(?:0|[1-9][0-9]*)"
+    r"(?:\.[1-9][0-9]*)?"
     r"(?:-(?:0|[1-9][0-9]*|[0-9]*[a-z-][0-9a-z-]*)"
     r"(?:\.(?:0|[1-9][0-9]*|[0-9]*[a-z-][0-9a-z-]*))*)?"
 )

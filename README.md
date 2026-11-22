@@ -14,7 +14,7 @@ that run JavaScript:
 | Netlify Edge Functions | `publish/netlify`: a site whose edge function `netlify dev` runs and `netlify deploy` deploys |
 | Vercel Functions | `publish/vercel`: a project whose Node.js function `vercel deploy` deploys |
 
-Its version is the NetWasm version it works with.
+Its version starts with the NetWasm version it works with: NetWasm.Hosts 0.15.2.1 works with NetWasm 0.15.2.
 
 Hosts that need no package:
 

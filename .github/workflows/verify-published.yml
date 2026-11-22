@@ -1,0 +1,38 @@
+name: Verify published
+
+# After a release: the package as NuGet.org serves it, signature checked, through the same end-to-end checks the
+# release qualified it with, from the source at its release tag.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: NetWasm.Hosts version on NuGet.org, such as 0.15.2-preview.1 or 0.15.2
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      VERSION: ${{ inputs.version }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: v${{ inputs.version }}
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          global-json-file: global.json
+      - name: Download from NuGet.org and verify its signature
+        run: |
+          id=$(echo "NetWasm.Hosts" | tr '[:upper:]' '[:lower:]')
+          version=$(echo "$VERSION" | tr '[:upper:]' '[:lower:]')
+          mkdir -p artifacts/nuget
+          curl -fsSL -o "artifacts/nuget/NetWasm.Hosts.$VERSION.nupkg" \
+            "https://api.nuget.org/v3-flatcontainer/$id/$version/$id.$version.nupkg"
+          dotnet nuget verify --all "artifacts/nuget/NetWasm.Hosts.$VERSION.nupkg"
+      - name: Publish and serve it on every host it supports
+        run: NETWASM_HOSTS_PACKAGES=artifacts/nuget eng/verify-service-hosts.sh "$VERSION"

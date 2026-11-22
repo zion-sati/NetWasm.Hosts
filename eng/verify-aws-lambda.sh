@@ -21,8 +21,8 @@ work="$root/artifacts/verify-aws-lambda"
 rm -rf "$work" && mkdir -p "$work"
 name=netwasm-hosts-lambda-$$
 trap 'docker exec "$name" chmod -R a+rwX /work > /dev/null 2>&1 || true; docker rm -f "$name" "$name-lambda" > /dev/null 2>&1 || true' EXIT
-docker run --platform "$platform" -d --name "$name" -v "$here:/check:ro" -v "$work:/work" "$sdk_image" sleep infinity > /dev/null
-docker exec "$name" bash /check/publish.sh "$netwasm"
+docker run --platform "$platform" -d --name "$name" -v "$root/eng:/eng:ro" -v "$work:/work" "$sdk_image" sleep infinity > /dev/null
+docker exec "$name" bash /eng/node-function/publish.sh "$netwasm" verify-aws-lambda
 docker run --platform "$platform" -d --name "$name-lambda" --network "container:$name" -v "$work/function:/var/task:ro" -v "$here:/check:ro" \
   "$lambda_image" index.handler > /dev/null
 docker exec "$name-lambda" bash /check/invoke.sh

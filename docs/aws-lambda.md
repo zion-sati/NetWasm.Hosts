@@ -27,10 +27,10 @@ namespace Functions;
 
 public static partial class Exports
 {
-    // index.mjs passes each request's method, path and body and answers with what this returns.
+    // The provider's handler passes each request's method, path and body and answers with what this returns.
     [JSExport("handle")]
     public static Task<string> Handle(string method, string path, string body) =>
-        Task.FromResult($"Hello from C# on Lambda: {method} {path} ({body.Length} bytes)\n");
+        Task.FromResult($"Hello from C#: {method} {path} ({body.Length} bytes)\n");
 }
 ```
 
@@ -76,7 +76,8 @@ curl http://localhost:9000/2015-03-31/functions/function/invocations \
 ```
 
 This guide is checked end to end by `eng/verify-aws-lambda.sh`, which publishes the function above with NetWasm's
-packages from NuGet.org and invokes it in that image.
+packages from NuGet.org and invokes it in that image. The same project runs on [Azure Functions](azure-functions.md)
+and [Google Cloud Run functions](cloud-run-functions.md) with their own handlers.
 
 ## A `wasi:http` service instead
 

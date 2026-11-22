@@ -1,0 +1,8 @@
+apiVersion: core.spinkube.dev/v1alpha1
+kind: SpinApp
+metadata:
+  name: hello
+spec:
+  image: "__IMAGE__"
+  executor: containerd-shim-spin
+  replicas: 1

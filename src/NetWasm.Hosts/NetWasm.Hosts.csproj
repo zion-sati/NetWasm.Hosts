@@ -4,7 +4,7 @@
     <AssemblyName>NetWasm.Hosts.Tasks</AssemblyName>
     <RootNamespace>NetWasm.Hosts</RootNamespace>
     <PackageId>NetWasm.Hosts</PackageId>
-    <Description>Publishes a NetWasm wasi:http service component for hosts that run JavaScript: dotnet publish also writes a Cloudflare Worker that wrangler runs and deploys, and a Deno service that deno serve runs.</Description>
+    <Description>Publishes a NetWasm wasi:http service component for hosts that run JavaScript: dotnet publish also writes a Cloudflare Worker that wrangler runs and deploys, a Deno service that deno serve runs, a Netlify edge function and a Vercel Function.</Description>
     <PackageTags>netwasm;wasm;wasi;cloudflare;workers;deno;serverless</PackageTags>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>

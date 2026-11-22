@@ -25,9 +25,13 @@ public sealed record ServicePublishRequest(
     ImmutableArray<EnvironmentVariable> Variables,
     ImmutableDictionary<string, string> Settings);
 
-/// <summary>What a host's writer has to work with: the component, the declared variables and the settings.</summary>
+/// <summary>
+/// What a host's writer has to work with: the component and the directory jco wrote it to, the declared variables
+/// and the settings.
+/// </summary>
 public sealed record ServiceHostInput(
     TranspiledComponent Component,
+    string ComponentDirectory,
     string AssemblyName,
     ImmutableArray<EnvironmentVariable> Variables,
     ImmutableDictionary<string, string> Settings);
@@ -43,6 +47,12 @@ public sealed record CopiedFile(string RelativePath, string SourcePath) : Packag
 
 /// <summary>A file the publish writes.</summary>
 public sealed record GeneratedFile(string RelativePath, string Text) : PackageFile(RelativePath);
+
+/// <summary>
+/// A JavaScript module whose default export is a file's bytes in base64, for a host that bundles modules but no
+/// other files.
+/// </summary>
+public sealed record EmbeddedModuleFile(string RelativePath, string SourcePath) : PackageFile(RelativePath);
 
 /// <summary>A publish input no host can be published from; the message says which and why.</summary>
 public sealed class ServiceHostException(string message) : Exception(message);

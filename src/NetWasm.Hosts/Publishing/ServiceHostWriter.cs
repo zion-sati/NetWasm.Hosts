@@ -12,7 +12,7 @@ public interface IServiceHostWriter
     string Host { get; }
 
     /// <summary>The host's own files.</summary>
-    ImmutableArray<GeneratedFile> Write(ServiceHostInput input);
+    ImmutableArray<PackageFile> Write(ServiceHostInput input);
 }
 
 /// <summary>Selects a host's writer by name.</summary>

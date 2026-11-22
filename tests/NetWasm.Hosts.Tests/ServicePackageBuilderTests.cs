@@ -17,10 +17,10 @@ public sealed class ServicePackageBuilderTests
     {
         public string Host => host;
 
-        public ImmutableArray<GeneratedFile> Write(ServiceHostInput input)
+        public ImmutableArray<PackageFile> Write(ServiceHostInput input)
         {
-            calls.Made.Add($"write {host} {input.Component.JavaScriptFile}|{input.AssemblyName}|{input.Variables.Length}|{input.Settings["S"]}");
-            return [new(host + ".mjs", host)];
+            calls.Made.Add($"write {host} {input.Component.JavaScriptFile}|{input.ComponentDirectory}|{input.AssemblyName}|{input.Variables.Length}|{input.Settings["S"]}");
+            return [new GeneratedFile(host + ".mjs", host)];
         }
     }
 
@@ -79,8 +79,8 @@ public sealed class ServicePackageBuilderTests
                 "select cloudflare",
                 "component /obj/component|Hello",
                 "modules fetch-service-host.mjs|/netwasm,/hosts",
-                "write deno Hello.js|Hello|1|setting",
-                "write cloudflare Hello.js|Hello|1|setting",
+                "write deno Hello.js|/obj/component|Hello|1|setting",
+                "write cloudflare Hello.js|/obj/component|Hello|1|setting",
             ],
             calls.Made);
     }
@@ -90,7 +90,7 @@ public sealed class ServicePackageBuilderTests
     {
         var calls = new Calls();
         var failure = Assert.Throws<ServiceHostException>(() => Builder(calls).Build(Request([])));
-        Assert.Equal("Set NetWasmServiceHosts to the hosts to publish for: cloudflare, deno or both (cloudflare;deno).", failure.Message);
+        Assert.Equal("Set NetWasmServiceHosts to the hosts to publish for, separated by ';': cloudflare, deno, netlify, vercel.", failure.Message);
         Assert.Empty(calls.Made);
     }
 

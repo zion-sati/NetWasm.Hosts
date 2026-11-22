@@ -20,7 +20,7 @@ public sealed class CloudflareHostWriterTests
     }
 
     private static ServiceHostInput Input(ImmutableDictionary<string, string> settings, params EnvironmentVariable[] variables) =>
-        new(new("Hello.js", ["Hello.conditional-suspending-0.wasm", "Hello.core.wasm"]), "Hello", [.. variables], settings);
+        new(new("Hello.js", ["Hello.conditional-suspending-0.wasm", "Hello.core.wasm"]), "/obj/component", "Hello", [.. variables], settings);
 
     private static readonly ImmutableDictionary<string, string> Dated =
         ImmutableDictionary<string, string>.Empty.Add(CloudflareHostWriter.CompatibilityDateSetting, "2026-11-01");
@@ -59,7 +59,7 @@ public sealed class CloudflareHostWriterTests
             });
 
             """.ReplaceLineEndings("\n"),
-            files[0].Text);
+            Assert.IsType<GeneratedFile>(files[0]).Text);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public sealed class CloudflareHostWriterTests
             }
 
             """.ReplaceLineEndings("\n"),
-            files[1].Text.ReplaceLineEndings("\n"));
+            Assert.IsType<GeneratedFile>(files[1]).Text.ReplaceLineEndings("\n"));
         Assert.Equal([("orders", "Hello")], names.Calls);
     }
 

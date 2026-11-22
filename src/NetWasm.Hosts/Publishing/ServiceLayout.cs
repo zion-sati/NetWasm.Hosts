@@ -10,7 +10,13 @@ public static class ServiceLayout
     public const string HostDirectory = "host";
     public const string HostEntryName = "fetch-service-host.mjs";
 
-    public static string ComponentImport(string file) => "./" + ComponentDirectory + "/" + file;
+    /// <summary>The specifier of a component file, imported from an entry the given number of directories down.</summary>
+    public static string ComponentImport(string file, int depth = 0) => Up(depth) + ComponentDirectory + "/" + file;
 
-    public static string HostEntryImport => "./" + HostDirectory + "/" + HostEntryName;
+    public static string HostEntryImport => HostEntryImportFrom(0);
+
+    /// <summary>The specifier of the host entry, imported from an entry the given number of directories down.</summary>
+    public static string HostEntryImportFrom(int depth) => Up(depth) + HostDirectory + "/" + HostEntryName;
+
+    private static string Up(int depth) => depth == 0 ? "./" : string.Concat(Enumerable.Repeat("../", depth));
 }

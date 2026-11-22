@@ -37,6 +37,9 @@ public sealed class HostPackageWriter : IHostPackageWriter
                     case GeneratedFile generated:
                         File.WriteAllText(path, generated.Text);
                         break;
+                    case EmbeddedModuleFile embedded:
+                        File.WriteAllText(path, $"export default \"{Convert.ToBase64String(File.ReadAllBytes(embedded.SourcePath))}\";\n");
+                        break;
                     default:
                         throw new NotSupportedException($"A file of kind {file.GetType().Name} cannot be written.");
                 }

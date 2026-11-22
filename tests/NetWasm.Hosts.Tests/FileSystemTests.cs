@@ -63,6 +63,19 @@ public sealed class FileSystemTests : IDisposable
         Assert.Equal("component", File.ReadAllText(Path.Combine(root, "Hello.wasm")));
     }
 
+    [Fact]
+    public void AnEmbeddedModuleExportsItsSourcesBytesInBase64()
+    {
+        var source = Path.Combine(_root, "Hello.core.wasm");
+        File.WriteAllBytes(source, [0x00, 0x61, 0x73, 0x6d, 0xff]);
+        var root = Path.Combine(_root, "publish");
+
+        var written = new HostPackageWriter().Write(root, [new("netlify", [new EmbeddedModuleFile("gen/Hello.core.wasm.mjs", source)])]);
+
+        Assert.Equal([Path.Combine(root, "netlify", "gen", "Hello.core.wasm.mjs")], written);
+        Assert.Equal("export default \"AGFzbf8=\";\n", File.ReadAllText(written[0]));
+    }
+
     private sealed record UnknownFile(string RelativePath) : PackageFile(RelativePath);
 
     [Fact]

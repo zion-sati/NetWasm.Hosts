@@ -11,11 +11,12 @@ public sealed class DenoHostWriterTests
     [Fact]
     public void TheEntryCompilesTheCoreModulesAtStartupAndPassesOnlyTheDeclaredVariables()
     {
-        var file = Assert.Single(new DenoHostWriter().Write(new(
+        var file = Assert.IsType<GeneratedFile>(Assert.Single(new DenoHostWriter().Write(new(
             new("Hello.js", ["Hello.conditional-suspending-0.wasm", "Hello.core.wasm"]),
+            "/obj/component",
             "Hello",
             [new("GREETING", "declared")],
-            ImmutableDictionary<string, string>.Empty)));
+            ImmutableDictionary<string, string>.Empty))));
 
         Assert.Equal("main.mjs", file.RelativePath);
         Assert.Equal(

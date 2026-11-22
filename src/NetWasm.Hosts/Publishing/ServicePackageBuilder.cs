@@ -27,7 +27,7 @@ public sealed class ServicePackageBuilder(
         ArgumentNullException.ThrowIfNull(request);
         if (request.Hosts.IsEmpty)
         {
-            throw new ServiceHostException("Set NetWasmServiceHosts to the hosts to publish for: cloudflare, deno or both (cloudflare;deno).");
+            throw new ServiceHostException("Set NetWasmServiceHosts to the hosts to publish for, separated by ';': cloudflare, deno, netlify, vercel.");
         }
         var repeatedHost = request.Hosts.GroupBy(host => host, StringComparer.Ordinal).FirstOrDefault(group => group.Count() > 1);
         if (repeatedHost is not null)
@@ -44,7 +44,7 @@ public sealed class ServicePackageBuilder(
                 ServiceLayout.ComponentDirectory + "/" + file, Path.Combine(request.ComponentDirectory, file))),
             .. modules.Select(module => new CopiedFile(ServiceLayout.HostDirectory + "/" + module.Name, module.SourcePath)),
         ];
-        var input = new ServiceHostInput(component, request.AssemblyName, request.Variables, request.Settings);
+        var input = new ServiceHostInput(component, request.ComponentDirectory, request.AssemblyName, request.Variables, request.Settings);
         return [.. selected.Select(writer => new HostPackage(writer.Host, [.. writer.Write(input), .. shared]))];
     }
 

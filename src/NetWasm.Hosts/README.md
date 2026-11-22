@@ -1,7 +1,7 @@
 # NetWasm.Hosts
 
 Publishes a [NetWasm](https://github.com/zion-sati/NetWasm) HTTP service for hosts that run JavaScript rather than
-WebAssembly components: Cloudflare Workers and Deno. The service is the standard
+WebAssembly components: Cloudflare Workers, Deno, Netlify Edge Functions and Vercel Functions. The service is the standard
 `wasi:http` component NetWasm already builds for Wasmtime, Spin and wasmCloud; this package puts a host's own entry
 around it, so `dotnet publish` also writes a directory that host runs as it is.
 
@@ -16,11 +16,12 @@ Name the hosts in the project file:
 
 ```xml
 <PropertyGroup>
-  <NetWasmServiceHosts>cloudflare;deno</NetWasmServiceHosts>
+  <NetWasmServiceHosts>cloudflare;deno;netlify;vercel</NetWasmServiceHosts>
 </PropertyGroup>
 ```
 
-Then `dotnet publish -c Release -o publish` writes `publish/cloudflare` and `publish/deno` beside the component.
+Then `dotnet publish -c Release -o publish` writes a directory per host (`publish/cloudflare`, `publish/deno`,
+`publish/netlify`, `publish/vercel`) beside the component.
 
 ## Cloudflare Workers
 
@@ -55,7 +56,47 @@ deno serve --allow-read --allow-net --allow-env main.mjs     # http://localhost:
 component's environment is the declared variables, each replaced by the process's variable of the same name when it
 has one; no other variable of the process reaches the component.
 
-## Both hosts
+Deno Deploy is not covered: Deno is closing it in April 2027 and moving its users to Cloudflare Workers, which the
+`cloudflare` host publishes for.
+
+## Netlify Edge Functions
+
+```sh
+cd publish/netlify
+npx netlify-cli@27.16.2 dev             # http://localhost:8888
+npx netlify-cli@27.16.2 deploy --prod
+```
+
+| File | What it is |
+| --- | --- |
+| `netlify/edge-functions/service.js` | The edge function: it serves every path through the component's `wasi:http` handler |
+| `gen/*.wasm.mjs` | Each core module embedded in base64, since Netlify's bundler carries modules but no `.wasm` files |
+| `netlify.toml` | The site's configuration, with an empty publish directory (`public`) |
+
+The edge function compiles the core modules once per isolate. The site's environment variables reach the component in
+place of the declared ones of the same name; no other variable does. Netlify allows an edge function 50 ms of CPU time
+per request and 20 MB of code; a request that needs more is stopped. The check runs the edge function in
+`netlify dev`'s local edge runtime, not on Netlify itself.
+
+## Vercel Functions
+
+```sh
+cd publish/vercel
+npx vercel@65.12.1 deploy --prod
+```
+
+| File | What it is |
+| --- | --- |
+| `api/service.mjs` | The function, on the Node.js runtime: its `fetch` export hands each request to the component's `wasi:http` handler |
+| `vercel.json` | Sends every path to the function and ships the core modules (`gen/`) with it |
+| `package.json` | Selects Node.js 24 |
+
+The function compiles the core modules once per instance. Its environment variables reach the component in place of
+the declared ones of the same name; no other variable does. Vercel recommends its Node.js runtime over the Edge
+runtime, so the function runs on Node.js. `vercel dev` needs a Vercel account, so the check calls the function's
+`fetch` export on Node.js 24 the way Vercel's runtime does, rather than on Vercel itself.
+
+## Every host
 
 - `publish/<host>/gen` holds the component transpiled to JavaScript by NetWasm's jco, with its core modules, and
   `publish/<host>/host` the host modules the entry imports: NetWasm's WASI host and the Fetch API adapter. The
@@ -64,15 +105,17 @@ has one; no other variable of the process reaches the component.
   error go to the host's log.
 - The component's own requests (`HttpClient` over `wasi:http`) go out through the host's `fetch`.
 - `NetWasmEnvironmentVariable` items reach the component's environment, as on the other hosts.
-- The component sees no file system: Workers have none, and the Deno entry preopens no directory.
-- Neither host offers `wasi:tls`, so a program that reaches `SslStream` directly needs `NetWasmTlsSupport=false`;
+- The component sees no file system: no entry preopens a directory, and Workers and Netlify edge functions have
+  none.
+- No host here offers `wasi:tls`, so a program that reaches `SslStream` directly needs `NetWasmTlsSupport=false`;
   `HttpClient` over `wasi:http` is not affected.
 
 ## Versions
 
 NetWasm.Hosts uses NetWasm's build tools and host modules as they are in one NetWasm release, so its version is the
 NetWasm version it works with: NetWasm.Hosts 0.15.2 needs NetWasm.Sdk 0.15.2, and the build stops with NWHOSTS002
-when the two differ. It is verified with wrangler 4.158.0 (workerd 1.20261104.1) and Deno 2.9.8.
+when the two differ. It is verified with wrangler 4.158.0 (workerd 1.20261104.1), Deno 2.9.8, netlify-cli 27.16.2
+and Node.js 24.
 
 ## Diagnostics
 

@@ -22,6 +22,8 @@ Hosts that need no package:
 | SpinKube (Kubernetes) | [SpinKube](docs/spinkube.md): the component as a `SpinApp` on the Spin containerd shim |
 | Google Cloud Run, Azure Container Apps, AWS Fargate | [Containers](docs/containers.md): `wasmtime serve` in a container image |
 | AWS Lambda | [AWS Lambda](docs/aws-lambda.md): a `JsModule` with the `node` host in a Node.js function |
+| Azure Functions | [Azure Functions](docs/azure-functions.md): the same `JsModule` in a Node.js function |
+| Google Cloud Run functions | [Cloud Run functions](docs/cloud-run-functions.md): the same `JsModule` in a Node.js function |
 
 ## Building and testing
 
@@ -33,6 +35,8 @@ eng/verify-native-hosts.sh               # the template's service in Wasmtime, S
 eng/verify-spinkube.sh                   # the SpinKube guide, in a kind cluster
 eng/verify-container.sh                  # the container guide
 eng/verify-aws-lambda.sh                 # the AWS Lambda guide, in AWS's Lambda image
+eng/verify-azure-functions.sh            # the Azure Functions guide, in Microsoft's Functions host image
+eng/verify-cloud-run-functions.sh        # the Cloud Run functions guide, in Google's Functions Framework
 ```
 
 CI runs every check on each pull request and weekly; after a release, the Verify published workflow runs the

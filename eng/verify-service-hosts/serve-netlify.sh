@@ -4,15 +4,16 @@
 #
 # Runs in the Node.js 24 container with netlify-cli (see ../verify-service-hosts.sh): serves each Netlify publish with
 # netlify dev --offline, which bundles and runs the edge function in its local Deno edge runtime with no Netlify
-# account, and requests it. The environment holds a variable no variant declares (UNDECLARED), which must not reach
-# the component.
+# account, and requests it. The site's variables come from its .env file, as netlify dev reads them; they include
+# one no variant declares (UNDECLARED), which must not reach the component.
 set -euo pipefail
 echo "netlify-cli $(netlify --version | head -1)"
 
-start() { # label, environment assignments...
+start() { # label, the site's variables...
   local label=$1; shift
+  printf '%s\n' UNDECLARED=leak "$@" > "/work/$label/netlify/.env"
   # Its own process group, so stopping it also stops the Deno edge runtime it starts.
-  (cd "/work/$label/netlify" && exec setsid env UNDECLARED=leak "$@" netlify dev --offline --no-open --port 8888 \
+  (cd "/work/$label/netlify" && exec setsid netlify dev --offline --no-open --port 8888 \
     --framework '#static') > "/tmp/$label.log" 2>&1 &
   server=$!
   for _ in $(seq 1 180); do

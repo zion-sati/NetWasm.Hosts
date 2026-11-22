@@ -1,0 +1,12 @@
+spin_manifest_version = 2
+
+[application]
+name = "hello"
+version = "0.1.0"
+
+[[trigger.http]]
+route = "/..."
+component = "service"
+
+[component.service]
+source = "Hello.wasm"

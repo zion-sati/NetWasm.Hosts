@@ -12,7 +12,7 @@ public sealed class ServiceHostWriterSelectorTests
     {
         public string Host => host;
 
-        public ImmutableArray<GeneratedFile> Write(ServiceHostInput input) => [];
+        public ImmutableArray<PackageFile> Write(ServiceHostInput input) => [];
     }
 
     [Fact]

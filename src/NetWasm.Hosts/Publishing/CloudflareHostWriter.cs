@@ -22,7 +22,7 @@ public sealed class CloudflareHostWriter(IWorkerNameResolver names) : IServiceHo
 
     public string Host => "cloudflare";
 
-    public ImmutableArray<GeneratedFile> Write(ServiceHostInput input)
+    public ImmutableArray<PackageFile> Write(ServiceHostInput input)
     {
         var date = input.Settings.GetValueOrDefault(CompatibilityDateSetting, "");
         if (!DateOnly.TryParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
@@ -32,8 +32,8 @@ public sealed class CloudflareHostWriter(IWorkerNameResolver names) : IServiceHo
         var name = names.Resolve(input.Settings.GetValueOrDefault(NameSetting, ""), input.AssemblyName);
         return
         [
-            new(EntryFileName, Entry(input)),
-            new(ConfigFileName, JsonSerializer.Serialize(
+            new GeneratedFile(EntryFileName, Entry(input)),
+            new GeneratedFile(ConfigFileName, JsonSerializer.Serialize(
                 new WranglerConfigDocument(name, EntryFileName, date),
                 HostsJsonContext.Default.WranglerConfigDocument) + "\n"),
         ];

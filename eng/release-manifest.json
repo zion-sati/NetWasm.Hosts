@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "repository": "zion-sati/NetWasm.Hosts",
   "repositoryUrl": "https://github.com/zion-sati/NetWasm.Hosts",
-  "releaseVersion": "0.15.2",
-  "releaseTag": "v0.15.2",
+  "releaseVersion": "0.15.2.1",
+  "releaseTag": "v0.15.2.1",
   "sourceCommit": "0000000000000000000000000000000000000000",
   "dependencyVersions": {},
   "packages": [

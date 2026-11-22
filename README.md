@@ -11,14 +11,17 @@ that run JavaScript:
 | --- | --- |
 | Cloudflare Workers | `publish/cloudflare`: a Worker that `wrangler dev` runs and `wrangler deploy` deploys |
 | Deno | `publish/deno`: a service that `deno serve` runs |
+| Netlify Edge Functions | `publish/netlify`: a site whose edge function `netlify dev` runs and `netlify deploy` deploys |
+| Vercel Functions | `publish/vercel`: a project whose Node.js function `vercel deploy` deploys |
 
-Its version is the NetWasm version it works with.
+Its version starts with the NetWasm version it works with: NetWasm.Hosts 0.15.2.1 works with NetWasm 0.15.2.
 
 Hosts that need no package:
 
 | Host | How |
 | --- | --- |
 | Wasmtime, Spin, wasmCloud | Run the published component as it is (`wasmtime serve -Sp3 -Scli`, `spin up`, `wash dev`); checked by `eng/verify-native-hosts.sh` |
+| Akamai Functions | [Akamai Functions](docs/akamai-functions.md): the component as a Spin application, `spin aka deploy` |
 | SpinKube (Kubernetes) | [SpinKube](docs/spinkube.md): the component as a `SpinApp` on the Spin containerd shim |
 | Google Cloud Run, Azure Container Apps, AWS Fargate | [Containers](docs/containers.md): `wasmtime serve` in a container image |
 | AWS Lambda | [AWS Lambda](docs/aws-lambda.md): a `JsModule` with the `node` host in a Node.js function |
@@ -30,7 +33,7 @@ Hosts that need no package:
 ```sh
 dotnet test NetWasm.Hosts.slnx          # the publish step's unit tests, 100% line and branch coverage
 eng/test-javascript.sh                   # the host modules, 100% line, branch and function coverage
-eng/verify-service-hosts.sh              # end to end in Docker: the template's service published with NetWasm.Hosts, run in wrangler dev and deno serve
+eng/verify-service-hosts.sh              # end to end in Docker: the template's service published with NetWasm.Hosts, run in wrangler dev, deno serve, netlify dev and Node.js 24 as Vercel calls it
 eng/verify-native-hosts.sh               # the template's service in Wasmtime, Spin and wasmCloud
 eng/verify-spinkube.sh                   # the SpinKube guide, in a kind cluster
 eng/verify-container.sh                  # the container guide

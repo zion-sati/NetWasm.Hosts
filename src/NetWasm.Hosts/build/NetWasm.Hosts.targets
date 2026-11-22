@@ -7,7 +7,7 @@
        lists, in $(PublishDir)<host>: the host's entry and configuration, the component transpiled by NetWasm's jco
        (gen/) and the host modules the entry imports (host/).
 
-       NetWasmServiceHosts                  cloudflare, deno, or both (cloudflare;deno).
+       NetWasmServiceHosts                  the hosts, separated by ';': cloudflare, deno, netlify, vercel.
        NetWasmCloudflareWorkerName          the Worker's name; the assembly name in lower case by default.
        NetWasmCloudflareCompatibilityDate   the Workers runtime date the Worker asks for; the date this release was
                                             verified with by default.
@@ -29,7 +29,7 @@
            Text="NetWasm.Hosts publishes a wasi:http service component (a net10.0-netwasm project whose NetWasmWorld is service, as the netwasm-serverless template makes); $(MSBuildProjectName) is not one." />
     <Error Code="NWHOSTS002"
            Condition="'$(NetWasmHostingBuildPackageVersion)' != '$(NetWasmHostsNetWasmVersion)'"
-           Text="NetWasm.Hosts $(NetWasmHostsVersion) works with NetWasm.Sdk $(NetWasmHostsNetWasmVersion), and $(MSBuildProjectName) builds with NetWasm.Sdk $(NetWasmHostingBuildPackageVersion). Use the NetWasm.Hosts version that matches NetWasm.Sdk." />
+           Text="NetWasm.Hosts $(NetWasmHostsVersion) works with NetWasm.Sdk $(NetWasmHostsNetWasmVersion), and $(MSBuildProjectName) builds with NetWasm.Sdk $(NetWasmHostingBuildPackageVersion). Use a NetWasm.Hosts release whose version starts with that NetWasm.Sdk version." />
     <PropertyGroup>
       <_NetWasmHostsTranspiler>$([System.IO.Path]::Combine('$(PkgNetWasm_Hosting_Build)', 'tasks', 'net10.0', 'run-jco-transpile.mjs'))</_NetWasmHostsTranspiler>
       <_NetWasmHostsWork>$([System.IO.Path]::GetFullPath($([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'netwasm', 'hosts'))))</_NetWasmHostsWork>

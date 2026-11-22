@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 #
 # Runs in the .NET SDK container (see ../verify-service-hosts.sh): creates the template's service with NetWasm's packages
-# from NuGet.org and NetWasm.Hosts from /packages, and publishes four variants for Cloudflare and Deno into /work.
+# from NuGet.org and NetWasm.Hosts from /packages, and publishes four variants for every host into /work.
 set -euo pipefail
 netwasm=$1 version=$2
 dotnet new install "NetWasm.Templates@$netwasm" > /dev/null
@@ -11,12 +11,13 @@ cd /tmp && rm -rf Hello && dotnet new netwasm-serverless -n Hello > /dev/null &&
 dotnet new nugetconfig > /dev/null
 dotnet nuget add source /packages -n local > /dev/null
 dotnet add package NetWasm.Hosts --version "$version" > /dev/null
-sed -i 's|</PropertyGroup>|  <NetWasmServiceHosts>cloudflare;deno</NetWasmServiceHosts>\n  </PropertyGroup>|' Hello.csproj
+sed -i 's|</PropertyGroup>|  <NetWasmServiceHosts>cloudflare;deno;netlify;vercel</NetWasmServiceHosts>\n  </PropertyGroup>|' Hello.csproj
 
 publish() { # label
   rm -rf "/tmp/publish-$1"
   dotnet publish -c Release -o "/tmp/publish-$1" 2>&1 | tail -2
-  rm -rf "/work/$1" && mkdir -p "/work/$1" && cp -r "/tmp/publish-$1/cloudflare" "/tmp/publish-$1/deno" "/work/$1/"
+  rm -rf "/work/$1" && mkdir -p "/work/$1"
+  for host in cloudflare deno netlify vercel; do cp -r "/tmp/publish-$1/$host" "/work/$1/"; done
 }
 
 echo "== the template's service"

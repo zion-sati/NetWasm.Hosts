@@ -20,7 +20,7 @@ public sealed class PublishServiceHostsTask : Microsoft.Build.Utilities.Task
     public PublishServiceHostsTask()
         : this(
             new ServicePackageBuilder(
-                new ServiceHostWriterSelector([new CloudflareHostWriter(new WorkerNameResolver())]),
+                new ServiceHostWriterSelector([new CloudflareHostWriter(new WorkerNameResolver()), new DenoHostWriter()]),
                 new TranspiledComponentReader(new DirectoryFileLister()),
                 new HostModuleCollector(new TextFileReader())),
             new HostPackageWriter())

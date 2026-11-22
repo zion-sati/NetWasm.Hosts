@@ -21,7 +21,7 @@ and small and medium-sized businesses: organizations with fewer than 250 employe
 annual revenue. Larger organizations pay for a limited internal commercial-use right by sponsoring a matching
 GitHub Sponsors tier at <https://github.com/sponsors/zion-sati>, as described in NetWasm's
 [licensing guide](https://github.com/zion-sati/NetWasm/blob/main/docs/licensing.md). Generated Output, such as a
-published Worker's `worker.mjs` and `wrangler.json`, may be licensed and distributed under terms chosen by its
+published service's `worker.mjs`, `wrangler.json` and `main.mjs`, may be licensed and distributed under terms chosen by its
 author.
 
 The complete applicable texts are included locally:

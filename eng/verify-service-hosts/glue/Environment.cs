@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Hello;
 
-// Answers with two variables the project declares, one replaced by the Worker's own, and one it does not declare.
+// Answers with two variables the project declares, one replaced by the host's own, and one it does not declare.
 public static partial class ServiceExports
 {
     public static partial Task<HttpResponseMessage> Handle(HttpRequestMessage request) =>

@@ -27,7 +27,7 @@ public sealed class ServicePackageBuilder(
         ArgumentNullException.ThrowIfNull(request);
         if (request.Hosts.IsEmpty)
         {
-            throw new ServiceHostException("Set NetWasmServiceHosts to the hosts to publish for: cloudflare.");
+            throw new ServiceHostException("Set NetWasmServiceHosts to the hosts to publish for: cloudflare, deno or both (cloudflare;deno).");
         }
         var repeatedHost = request.Hosts.GroupBy(host => host, StringComparer.Ordinal).FirstOrDefault(group => group.Count() > 1);
         if (repeatedHost is not null)

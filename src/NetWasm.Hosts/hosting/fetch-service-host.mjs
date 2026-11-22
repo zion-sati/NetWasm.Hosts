@@ -12,13 +12,13 @@ import { createWasiPlatform } from "./wasi-platform.mjs";
 const optionKeys = ["component", "environment", "modules"];
 
 // A NetWasm wasi:http service component behind a Fetch API handler, the interface of Cloudflare
-// Workers and other JavaScript isolates: each request reaches the component's handler as a wasi:http request and its
+// Workers and Deno: each request reaches the component's handler as a wasi:http request and its
 // response streams back; the component's own requests go out through the host's fetch.
 // - component: the transpiled component's module (jco, async instantiation).
 // - modules: its core modules by file name, compiled (workerd compiles no Wasm at run time, so a
-//   Worker imports them precompiled).
+//   Worker imports them precompiled; a Deno entry compiles them once at startup).
 // - environment: the variables the project declares, as { name, value }. The string values of the
-//   env each request brings (a Worker's variables and secrets) join them, and
+//   env each request brings (a Worker's variables and secrets, Deno's environment) join them, and
 //   override a declared variable of the same name.
 // fetch(request, env, ctx) answers a request; ctx.waitUntil keeps the instance's release running
 // after the response is returned. The component sees no preopened directories.

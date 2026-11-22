@@ -90,7 +90,7 @@ public sealed class ServicePackageBuilderTests
     {
         var calls = new Calls();
         var failure = Assert.Throws<ServiceHostException>(() => Builder(calls).Build(Request([])));
-        Assert.Equal("Set NetWasmServiceHosts to the hosts to publish for: cloudflare.", failure.Message);
+        Assert.Equal("Set NetWasmServiceHosts to the hosts to publish for: cloudflare, deno or both (cloudflare;deno).", failure.Message);
         Assert.Empty(calls.Made);
     }
 

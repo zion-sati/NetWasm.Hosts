@@ -10,6 +10,7 @@ that run JavaScript:
 | Host | What `dotnet publish` also writes |
 | --- | --- |
 | Cloudflare Workers | `publish/cloudflare`: a Worker that `wrangler dev` runs and `wrangler deploy` deploys |
+| Deno | `publish/deno`: a service that `deno serve` runs |
 
 Its version is the NetWasm version it works with.
 
@@ -27,7 +28,7 @@ Hosts that need no package:
 ```sh
 dotnet test NetWasm.Hosts.slnx          # the publish step's unit tests, 100% line and branch coverage
 eng/test-javascript.sh                   # the host modules, 100% line, branch and function coverage
-eng/verify-service-hosts.sh              # end to end in Docker: the template's service published with NetWasm.Hosts, run in wrangler dev
+eng/verify-service-hosts.sh              # end to end in Docker: the template's service published with NetWasm.Hosts, run in wrangler dev and deno serve
 eng/verify-native-hosts.sh               # the template's service in Wasmtime, Spin and wasmCloud
 eng/verify-spinkube.sh                   # the SpinKube guide, in a kind cluster
 eng/verify-container.sh                  # the container guide

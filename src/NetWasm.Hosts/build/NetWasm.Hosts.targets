@@ -7,7 +7,7 @@
        lists, in $(PublishDir)<host>: the host's entry and configuration, the component transpiled by NetWasm's jco
        (gen/) and the host modules the entry imports (host/).
 
-       NetWasmServiceHosts                  the hosts, separated by semicolons: cloudflare.
+       NetWasmServiceHosts                  cloudflare, deno, or both (cloudflare;deno).
        NetWasmCloudflareWorkerName          the Worker's name; the assembly name in lower case by default.
        NetWasmCloudflareCompatibilityDate   the Workers runtime date the Worker asks for; the date this release was
                                             verified with by default.
